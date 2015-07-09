@@ -12,22 +12,34 @@
 	<dict>
 		<key>3E68C8908543B50D147ED756EB8C37B74FDAC45D</key>
 		<string>https://github.com/nicolaegabriela/lab2.git</string>
+		<key>C2D16A008C51BE76A0F778D5A3C43F1B1E0E4EFC</key>
+		<string>https://github.com/nicolaegabriela/lab4.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>Places.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>3E68C8908543B50D147ED756EB8C37B74FDAC45D</key>
+		<string>../../../Places</string>
+		<key>C2D16A008C51BE76A0F778D5A3C43F1B1E0E4EFC</key>
 		<string>../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>https://github.com/nicolaegabriela/lab2.git</string>
+	<string>https://github.com/nicolaegabriela/lab4.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>3E68C8908543B50D147ED756EB8C37B74FDAC45D</string>
+	<string>C2D16A008C51BE76A0F778D5A3C43F1B1E0E4EFC</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>C2D16A008C51BE76A0F778D5A3C43F1B1E0E4EFC</string>
+			<key>IDESourceControlWCCName</key>
+			<string>lab2-master</string>
+		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
