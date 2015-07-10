@@ -8,11 +8,16 @@
 
 #import "PlacesTableViewController.h"
 #import  <GoogleMaps/GoogleMaps.h>
+#import "DetailsViewController.h"
+#import "PlacesTableViewCell.h"
+
 @interface PlacesTableViewController ()
 @property(strong,nonatomic) GMSPlacesClient * placesClient;
 
 @property(weak,nonatomic) GMSAutocompletePrediction *result;
 @property(strong,nonatomic) NSMutableDictionary *dictionary;
+@property(strong,nonatomic) NSMutableArray *letters;
+@property(strong,nonatomic) GMSPlace * places;
 @end
 
 @implementation PlacesTableViewController
@@ -26,15 +31,27 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     _dictionary=[[NSMutableDictionary alloc]init];
+    _letters=[[NSMutableArray alloc]init];
     for(char a='a'; a<='z';a++)
     {
-        [self placeAutocomplete: [NSString stringWithFormat:@"%c",a]];
+        [_letters addObject:[NSString stringWithFormat:@"%c",a]];
+    }
+    for(NSString *key in _letters)
+    {
+        [self placeAutocomplete:key];
     }
 }
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    DetailsViewController *detailsViewController=segue.destinationViewController;
+    detailsViewController.place=_places;
 }
 
 #pragma mark - Table view data source
@@ -42,35 +59,40 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 #warning Potentially incomplete method implementation.
     // Return the number of sections.
-    return [[self.dictionary allKeys] count];
+    return [_letters count];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 #warning Incomplete method implementation.
     // Return the number of rows in the section.
-    NSString *key=[[self.dictionary allKeys]objectAtIndex:section];
+    NSString *key=[_letters objectAtIndex:section];
     NSArray *results=[self.dictionary objectForKey:key];
     return [results count];
 }
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-   static NSString *MyIdentifier =@"MyReuseIdentifier";
-    UITableViewCell *cell=[tableView dequeueReusableCellWithIdentifier:MyIdentifier];
+static    NSString *MyIdentifierOdd = @"OddCell";
+static    NSString *MyIdentifierEven = @"EvenCell";
+   
+    PlacesTableViewCell *cell=[tableView dequeueReusableCellWithIdentifier:(indexPath.row %2 == 0) ? MyIdentifierEven : MyIdentifierOdd];
     if(cell==nil){
-        cell=[[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:MyIdentifier ];
+        cell=[[PlacesTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:(indexPath.row %2 == 0) ? MyIdentifierEven : MyIdentifierOdd ];
         
     }
-    //cell.textLabel.text=[NSString stringWithFormat:@"Row: %d, In section: %d ",indexPath.row, indexPath.section ];
-    NSString *key=[[self.dictionary allKeys]objectAtIndex:indexPath.section];
+    
+    NSString *key=[_letters objectAtIndex:indexPath.section];
     NSArray *results=[self.dictionary objectForKey:key];
     GMSAutocompletePrediction *result= results[indexPath.row];
-    [cell.textLabel setText:[[ result attributedFullText] string]];
+    [cell.labels setText:[[ result attributedFullText] string]];
+    
+    
     return cell;
 }
+
 -(NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
-    return [NSString stringWithFormat:@"Section %d",section];
+
+    return [NSString stringWithFormat:@"%@",[_letters objectAtIndex:section]];
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     return 60;
@@ -98,9 +120,27 @@
                                     NSLog(@"Result '%@' with placeID %@", result.attributedFullText.string, result.placeID);
                                 
                                 }
+                                
                                 [self.dictionary setObject:results forKey:key];
                                 [self.tableView reloadData];
                             }];
+}
+-(void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    NSString *key=[_letters objectAtIndex:indexPath.section];
+    NSArray *results=[self.dictionary objectForKey:key];
+    GMSAutocompletePrediction *result= results[indexPath.row];
+    
+    NSString *placeID=[result placeID];
+    [_placesClient lookUpPlaceID:placeID callback:^(GMSPlace *place, NSError *error) {
+        _places=place;
+        if (error != nil) {
+            NSLog(@"Place Details error %@", [error localizedDescription]);
+            return;
+        }
+        
+
+        [self performSegueWithIdentifier:@"ShowDetails" sender:self];
+    }];
 }
 /*
 // Override to support conditional editing of the table view.
